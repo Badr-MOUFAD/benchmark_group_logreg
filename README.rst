@@ -7,11 +7,11 @@ reproducible the comparisons of optimization algorithms.
 This benchmark is dedicated to solver of the group logistic regression problem:
 
 
-$$\\min_{w} \\sum_{i=1} \\log(1 + e^{-(Xw)_i}) + \\sum_{g \\in \\mathcal{G}} \\lVert w_g \\rVert_2 $$
+$$\\min_{w} \\sum_{i=1}^p \\log(1 + e^{-(Xw)_i}) + \\sum_{g \\in \\mathcal{G}} \\lVert w_g \\rVert_2 $$
 
 
 where $n$ (or ``n_samples``) stands for the number of samples, $p$ (or ``n_features``) stands for the number of features,
-$\\mathcal{G}}$ the considered groups, and
+$\\mathcal{G}$ the considered groups, and
 
 
 $$X \\in \\mathbb{R}^{n \\times p} \\ , \\quad w \\in \\mathbb{R}^p$$
