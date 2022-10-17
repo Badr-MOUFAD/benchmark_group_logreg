@@ -1,38 +1,38 @@
 from benchopt import BaseObjective, safe_import_context
 
-# Protect import to allow manipulating objective without importing library
-# Useful for autocompletion and install commands
+
 with safe_import_context() as import_ctx:
     import numpy as np
+    from numpy.linalg import norm
 
 
 class Objective(BaseObjective):
-    name = "Ordinary Least Squares"
+    name = "Group Logistic regression"
 
-    # All parameters 'p' defined here are available as 'self.p'
     parameters = {
-        'fit_intercept': [False],
+        'n_groups': []
     }
 
+    def __init__(self, n_groups):
+        self.n_groups = n_groups
+
     def get_one_solution(self):
-        # Return one solution. This should be compatible with 'self.compute'.
         return np.zeros(self.X.shape[1])
 
     def set_data(self, X, y):
-        # The keyword arguments of this function are the keys of the `data`
-        # dict in the `get_data` function of the dataset.
-        # They are customizable.
         self.X, self.y = X, y
+        self.grp_ptr, self.grp_indices = np.array(), np.array()
 
     def compute(self, beta):
-        # The arguments of this function are the outputs of the
-        # `get_result` method of the solver.
-        # They are customizable.
-        diff = self.y - self.X.dot(beta)
-        return .5 * diff.dot(diff)
+        datafit_val = np.log(1 + np.exp(-self.y * self.X @ beta)).mean()
+
+        penalty_val = 0.
+        for g in range(self.n_groups):
+            grp_g_indices = self.grp_indices[self.grp_ptr[g]:self.grp_ptr[g+1]]
+            penalty_val += norm(beta[grp_g_indices], ord=2)
+
+        return datafit_val + penalty_val
 
     def to_dict(self):
-        # The output of this function are the keyword arguments
-        # for the `set_objective` method of the solver.
-        # They are customizable.
-        return dict(X=self.X, y=self.y, fit_intercept=self.fit_intercept)
+        return dict(X=self.X, y=self.y, grp_ptr=self.grp_ptr,
+                    grp_indices=self.grp_indices)
