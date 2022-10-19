@@ -10,7 +10,7 @@ class Objective(BaseObjective):
     name = "Group Logistic regression"
 
     parameters = {
-        'rho': [1e-0, 1e-1, 1e-2, 1e-3],
+        'rho': [1e-0, 1e-1, 1e-2, 5*1e-3],
     }
 
     def __init__(self, rho):
